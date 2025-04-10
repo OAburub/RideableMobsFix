@@ -1,5 +1,5 @@
 name: RideableMobs
-version: '1.0'
+version: '1.30'
 main: me.BigBou.rideableMobs.RideableMobs
 api-version: '1.21'
 authors: [ BigBou ]
