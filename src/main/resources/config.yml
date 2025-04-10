@@ -1,0 +1,98 @@
+# Custom message for when a player does not have permission to ride an entity
+no-permission-ride: "&cYou do not have permission to ride this mob"
+
+# Custom message for when a player is granted permission to ride an entity
+granted-permission: "&aYou are now granted permission to ride %entity_type%"
+
+# Custom message for when a player's permission to ride an entity is revoked/removed
+revoked-permission: "&cYou no longer have permission to ride %entity_type%"
+
+# Custom message for when an entity is disabled
+entity-disabled: "&cThis entity is disabled and you can't ride them"
+
+# Setting to establish that the primary hand must be empty in order to ride the entity.
+requires-empty-hand: true
+
+# Speed of the entity when riding it. (default: 0.4)
+entity-speed: 0.4
+
+# List of worlds where the plugin will work, meaning that you will be able to ride and control any mob.
+worlds:
+  - world
+  - world_nether
+  - world_the_end
+
+# Entities:
+allay: true
+armor_stand: true
+axolotl: true
+bat: true
+bee: true
+blaze: true
+cat: true
+cave_spider: true
+chicken: true
+cod: true
+cow: true
+creeper: true
+dolphin: true
+drowned: true
+elder_guardian: true
+ender_dragon: true
+enderman: true
+endermite: true
+evoker: true
+fox: true
+frog: true
+ghast: true
+giant: true
+glow_squid: true
+goat: true
+guardian: true
+hoglin: true
+husk: true
+illusioner: true
+iron_golem: true
+llama: true
+magma_cube: true
+mushroom_cow: true
+ocelot: true
+panda: true
+parrot: true
+phantom: true
+piglin: true
+piglin_brute: true
+pillager: true
+player: true
+polar_bear: true
+pufferfish: true
+rabbit: true
+ravager: true
+salmon: true
+sheep: true
+shulker: true
+silverfish: true
+skeleton: true
+skeleton_horse: true
+slime: true
+snow_golem: true
+spider: true
+squid: true
+stray: true
+tadpole: true
+tropical_fish: true
+turtle: true
+vex: true
+villager: true
+vindicator: true
+wandering_trader: true
+warden: true
+witch: true
+wither: true
+wither_skeleton: true
+wolf: true
+zoglin: true
+zombie: true
+zombie_horse: true
+zombie_villager: true
+zombified_piglin: true

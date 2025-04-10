@@ -1,0 +1,13 @@
+name: RideableMobs
+version: '1.0'
+main: me.BigBou.rideableMobs.RideableMobs
+api-version: '1.21'
+authors: [ BigBou ]
+commands:
+  rideablemobs:
+    description: Commands of the RideableMobs plugin.
+    aliases:
+      - rm
+    usage: /rideablemobs <command>
+    permission: "rideablemobs.commands"
+    permission-message: "You do not have permission to use this command"
