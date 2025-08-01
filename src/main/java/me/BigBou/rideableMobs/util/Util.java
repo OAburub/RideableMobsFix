@@ -56,7 +56,7 @@ public class Util {
                             double z = forward * Math.cos(radians) + sideways * Math.sin(radians);
 
                             // Create a velocity vector
-                            Vector velocity = new Vector(x, 0.0, z).normalize().multiply(plugin.getConfig().getDouble("entity-speed"));  // Adjust speed as needed
+                            Vector velocity = new Vector(x, 0.0, z).normalize().multiply(plugin.getConfig().getDouble("entity-speed") * (input.isSprint()? 1.3 : 1));  // Adjust speed as needed
 
                             // Retain the vertical velocity (e.g., gravity, flying, etc.)
                             velocity.setY(vehicle.getVelocity().getY());
