@@ -22,7 +22,7 @@ public class Util {
 
     private static Plugin plugin;
     public static final Set<World> ENABLED_WORLDS = new HashSet<>();
-    private static final NamespacedKey entityFreezeModifierKey = new NamespacedKey(plugin, "entity_freeze");
+    private static NamespacedKey entityFreezeModifierKey;
     public static AttributeModifier getEntityFreezeModifier(){
          return new AttributeModifier(entityFreezeModifierKey, -1, AttributeModifier.Operation.MULTIPLY_SCALAR_1);
     };
@@ -102,6 +102,7 @@ public class Util {
 
     public static void onEnable(Plugin plugin) {
         Util.plugin = plugin;
+        entityFreezeModifierKey = new NamespacedKey(plugin, "entity_freeze");
         getWorlds();
     }
 
