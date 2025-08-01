@@ -15,15 +15,17 @@ import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Method;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 public class InputListener extends PacketAdapter {
     private static final Logger log = LoggerFactory.getLogger(InputListener.class);
 
     public InputListener(Plugin plugin) {
-        super(plugin, new PacketType[]{PacketType.Play.Client.STEER_VEHICLE});
+        super(plugin, PacketType.Play.Client.STEER_VEHICLE);
     }
 
-    public static HashMap<Player, InputListener.WrappedInput> playerInputs = new HashMap<>();
+    public static Map<UUID, WrappedInput> playerInputs = new HashMap<>();
 
     public void onPacketReceiving(PacketEvent event) {
         Player player = event.getPlayer();
@@ -33,7 +35,7 @@ public class InputListener extends PacketAdapter {
                 PacketContainer packet = event.getPacket();
                 Object object = packet.getModifier().read(0);
                 InputListener.WrappedInput input = new InputListener.WrappedInput(object);
-                playerInputs.put(player, input);
+                playerInputs.put(player.getUniqueId(), input);
             }
         }
     }

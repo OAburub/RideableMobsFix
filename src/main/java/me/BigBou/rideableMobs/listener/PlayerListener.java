@@ -1,40 +1,34 @@
 package me.BigBou.rideableMobs.listener;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
 import me.BigBou.rideableMobs.util.Util;
+import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.Particle;
+import org.bukkit.attribute.Attributable;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
-import org.bukkit.entity.ArmorStand;
-import org.bukkit.entity.ComplexEntityPart;
-import org.bukkit.entity.ComplexLivingEntity;
-import org.bukkit.entity.EnderDragon;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.SkeletonHorse;
-import org.bukkit.entity.Vehicle;
-import org.bukkit.entity.ZombieHorse;
+import org.bukkit.entity.*;
 import org.bukkit.entity.EnderDragon.Phase;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDismountEvent;
 import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-import org.bukkit.event.entity.EntityDismountEvent;
+import org.bukkit.scheduler.BukkitTask;
+
+import java.util.*;
 
 public class PlayerListener implements Listener {
     private final JavaPlugin plugin;
-    private final HashMap<Material, Collection<PotionEffect>> foodEffects = new HashMap();
+    private final Map<Material, Collection<PotionEffect>> foodEffects = new HashMap<>();
+    private final Map<UUID, BukkitTask> taskMap = new HashMap<>();
 
     public PlayerListener(JavaPlugin plugin) {
         this.plugin = plugin;
@@ -47,7 +41,7 @@ public class PlayerListener implements Listener {
         EquipmentSlot hand = e.getHand();
         if (hand == EquipmentSlot.HAND) {
             Entity entity = e.getRightClicked();
-            if (entity.getPassengers().size() < 1 && (!(entity instanceof Vehicle) || entity instanceof ZombieHorse || entity instanceof SkeletonHorse)) {
+            if (entity.getPassengers().isEmpty() && (!(entity instanceof Vehicle) || entity instanceof ZombieHorse || entity instanceof SkeletonHorse)) {
                 Player player = e.getPlayer();
                 if (Util.isWorldEnabled(player)) {
                     EntityType type = entity.getType();
@@ -81,7 +75,7 @@ public class PlayerListener implements Listener {
                                 AttributeInstance ai = livingEntity.getAttribute(Attribute.MAX_HEALTH);
                                 switch (material) {
                                     case ENCHANTED_GOLDEN_APPLE:
-                                        livingEntity.addPotionEffects((Collection)this.foodEffects.get(Material.ENCHANTED_GOLDEN_APPLE));
+                                        livingEntity.addPotionEffects(this.foodEffects.get(Material.ENCHANTED_GOLDEN_APPLE));
 
                                         assert ai != null;
 
@@ -92,7 +86,7 @@ public class PlayerListener implements Listener {
                                         }
                                         break;
                                     case GOLDEN_APPLE:
-                                        livingEntity.addPotionEffects((Collection)this.foodEffects.get(Material.GOLDEN_APPLE));
+                                        livingEntity.addPotionEffects(this.foodEffects.get(Material.GOLDEN_APPLE));
 
                                         assert ai != null;
 
@@ -114,16 +108,23 @@ public class PlayerListener implements Listener {
                             }
 
                         } else {
+                            // start the movement task
+                            taskMap.put(player.getUniqueId(), Util.getRunnable(player).runTaskTimer(Util.getPlugin(), 0,0));
                             if (entity instanceof ArmorStand && !player.isSneaking()) {
                                 entity.addPassenger(player);
-                            } else if (entity instanceof ComplexEntityPart) {
-                                ComplexEntityPart entityPart = (ComplexEntityPart)entity;
-                                ComplexLivingEntity parent = entityPart.getParent();
-                                EnderDragon enderDragon = (EnderDragon)parent;
+                            } else if (entity instanceof ComplexEntityPart entityPart) {
+                                EnderDragon enderDragon = (EnderDragon) entityPart.getParent();
                                 enderDragon.setPhase(Phase.FLY_TO_PORTAL);
                                 enderDragon.addPassenger(player);
                             } else if (!(entity instanceof ArmorStand)) {
                                 entity.addPassenger(player);
+                                // prevent Moving entities from moving on their own
+                                if (entity instanceof Attributable attributable){
+                                    AttributeInstance movementSpeedAttr = attributable.getAttribute(Attribute.MOVEMENT_SPEED);
+                                    if (movementSpeedAttr != null){
+                                        movementSpeedAttr.setBaseValue(0.0);
+                                    }
+                                }
                             }
 
                         }
@@ -135,13 +136,21 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     public void onDismount(EntityDismountEvent e) {
-        Entity vehicle = e.getEntity();
-        if (vehicle instanceof Player player) {
-            vehicle = e.getDismounted();
+        if (e.getEntity() instanceof Player player) {
+            Entity vehicle = e.getDismounted();
             if (vehicle instanceof EnderDragon enderDragon) {
                 enderDragon.setPhase(Phase.HOVER);
             }
-
+            // make moving entities able to move on their own again
+            else if (vehicle instanceof Attributable attributable){
+                AttributeInstance movementSpeedAttr = attributable.getAttribute(Attribute.MOVEMENT_SPEED);
+                if (movementSpeedAttr != null){
+                    movementSpeedAttr.setBaseValue(movementSpeedAttr.getDefaultValue());
+                }
+            }
+            // cancel and remove the movement task
+            taskMap.get(player.getUniqueId()).cancel();
+            taskMap.remove(player.getUniqueId());
             if (Util.canSwim(vehicle) && vehicle.isInWater() && !player.isSneaking()) {
                 e.setCancelled(true);
             }
