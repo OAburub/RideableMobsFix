@@ -7,10 +7,8 @@ import java.util.Set;
 import me.BigBou.rideableMobs.listener.InputListener;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.World;
+import org.bukkit.*;
+import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.*;
 import org.bukkit.plugin.Plugin;
@@ -24,6 +22,10 @@ public class Util {
 
     private static Plugin plugin;
     public static final Set<World> ENABLED_WORLDS = new HashSet<>();
+    private static final NamespacedKey entityFreezeModifierKey = new NamespacedKey(plugin, "entity_freeze");
+    public static AttributeModifier getEntityFreezeModifier(){
+         return new AttributeModifier(entityFreezeModifierKey, -1, AttributeModifier.Operation.MULTIPLY_SCALAR_1);
+    };
     public static BukkitRunnable getRunnable(Player player){
         return new BukkitRunnable() {
             @Override

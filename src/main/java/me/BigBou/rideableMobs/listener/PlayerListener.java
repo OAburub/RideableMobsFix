@@ -3,13 +3,11 @@ package me.BigBou.rideableMobs.listener;
 import me.BigBou.rideableMobs.util.Util;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.TextColor;
-import org.bukkit.ChatColor;
-import org.bukkit.GameMode;
-import org.bukkit.Material;
-import org.bukkit.Particle;
+import org.bukkit.*;
 import org.bukkit.attribute.Attributable;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
+import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.entity.*;
 import org.bukkit.entity.EnderDragon.Phase;
 import org.bukkit.event.EventHandler;
@@ -122,7 +120,7 @@ public class PlayerListener implements Listener {
                                 if (entity instanceof Attributable attributable){
                                     AttributeInstance movementSpeedAttr = attributable.getAttribute(Attribute.MOVEMENT_SPEED);
                                     if (movementSpeedAttr != null){
-                                        movementSpeedAttr.setBaseValue(0.0);
+                                        movementSpeedAttr.addModifier(Util.getEntityFreezeModifier());
                                     }
                                 }
                             }
@@ -145,7 +143,7 @@ public class PlayerListener implements Listener {
             else if (vehicle instanceof Attributable attributable){
                 AttributeInstance movementSpeedAttr = attributable.getAttribute(Attribute.MOVEMENT_SPEED);
                 if (movementSpeedAttr != null){
-                    movementSpeedAttr.setBaseValue(movementSpeedAttr.getDefaultValue());
+                    movementSpeedAttr.removeModifier(Util.getEntityFreezeModifier());
                 }
             }
             // cancel and remove the movement task
